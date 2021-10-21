@@ -124,6 +124,21 @@ public class LLStack<T> implements Iterable<T>{
         return current.getThing();
     }
 
+    public String inToPost(String infix){
+        String[] parts = infix.split(" ");
+        for (String part : parts) {
+            this.push((T)part);
+        }
+
+        Iterator it = this.iterator();
+        String answ = "";
+        while(it.hasNext()){
+            answ += it.next();
+        }
+
+        return answ;
+    }
+
     //returns the stack as a string with all values. 
     public String toString() {
         if( this.head == null ) {
@@ -199,7 +214,8 @@ public class LLStack<T> implements Iterable<T>{
         System.out.println("Now, size should be 0:");
         System.out.println(stk.size());
 
-
+        System.out.println("Infix to postfix: ");
+        System.out.println(stk.inToPost("(AB) * (CD)"));
     }
 
 }   
