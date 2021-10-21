@@ -1,7 +1,7 @@
 //Katie Andre, Aidan Sweeny
 //Linked List Stack
 
-import java.util.Iterator;   
+import java.util.ListIterator;   
 import java.util.ArrayList;  
 import java.util.Collections; 
 import java.util.Random;
@@ -16,15 +16,24 @@ public class LLStack<T> implements Iterable<T>{
     private int size;
 
     //The below is an iterator that allows us to move from node to node. 
-    private class LLIterator implements Iterator<T>{
+    private class LLIterator implements ListIterator<T>{
         private Node next;
+        private Node previous;
         //Iterator constructor that allows us to set the next value. Initialize to head. 
         public LLIterator(Node head){
             this.next = head;
+            this.previous = null;
         }
         //returns whether or not there is a next item.
         public boolean hasNext(){
             if(this.next == null){
+                return false;
+            }
+            return true;
+        }
+
+        public boolean hasPrevious(){
+            if(this.previous == null){
                 return false;
             }
             return true;
@@ -36,17 +45,47 @@ public class LLStack<T> implements Iterable<T>{
             this.next = this.next.getNext();
             return nextUp;
         }
+
+        public T previous(){
+            if (this.previous != null){
+                T previousUp = this.previous.getThing();
+                this.previous = this.previous.getNext();
+                return previousUp;
+            }
+            else{
+                return null;
+            }
+        }
+
+        public void add(T item){
+        }
+
+        public void remove(){
+        }
+
+        public void set(T item){
+        }
+
+        public int nextIndex(){
+            return 0;
+        }
+
+        public int previousIndex(){
+            return 0;
+        }
     }
 
     /*The class Node allows us to define a Node in our LLStack. Every Node has a value inside of it of
     *arbitrary type, along with a next Node.*/      
     private class Node{
         private Node next;
+        private Node previous;
         private T item;
         
         //The constructor creates a node with a null next node and a specified item.
         public Node(T item){
             this.next = null;
+            this.previous = null;
             this.item = item;
         }
         //returns the value inside the node.
@@ -61,9 +100,17 @@ public class LLStack<T> implements Iterable<T>{
         public void setNext(Node n){
             this.next = n;
         }
+        //sets the prev node. Requires a node as a parameter. 
+        public void setPrevious(Node n){
+            this.previous = n;
+        }
         //returns the next Node. 
         public Node getNext(){
             return this.next;
+        }
+        //returns the prev Node. 
+        public Node getPrevious(){
+            return this.previous;
         }
         
     }
@@ -88,6 +135,9 @@ public class LLStack<T> implements Iterable<T>{
     public void push(T item){
         Node temp = new Node(item);
         temp.setNext(this.head);
+        if (this.head != null){
+            this.head.setPrevious(temp);
+        }
         this.head = temp;
         this.size++;
     }
@@ -96,6 +146,7 @@ public class LLStack<T> implements Iterable<T>{
     public T pop(){
         Node temp = this.head;
         this.head = this.head.getNext();
+        this.head.setPrevious(null);
         this.size--;
         return temp.getThing();
     }
@@ -106,7 +157,7 @@ public class LLStack<T> implements Iterable<T>{
     } 
         
     //creates a new iterator and returns it. 
-    public Iterator<T> iterator(){
+    public ListIterator<T> iterator(){
         LLIterator iterator = new LLIterator(this.head);
         return iterator;
     }
@@ -129,14 +180,17 @@ public class LLStack<T> implements Iterable<T>{
         for (String part : parts) {
             this.push((T)part);
         }
-
-        Iterator it = this.iterator();
-        String answ = "";
+        Node current = this.head;
+        String[] parenthesis = {"(", ")"};
+        ListIterator it = this.iterator();
+        String sol = "";
         while(it.hasNext()){
-            answ += it.next();
+            Object character = it.next();
+            if(character.toString().equals(parenthesis[1])){
+                sol += it.previous();
+            }
         }
-
-        return answ;
+        return sol;
     }
 
     //returns the stack as a string with all values. 
@@ -158,64 +212,64 @@ public class LLStack<T> implements Iterable<T>{
     //Main function. We test with integers, strings, and floats. 
     public static void main(String args[]) {
         LLStack stk = new LLStack();
-        for (int i = 0; i < 10; i++){
-            stk.push(i);
-        }
-        System.out.println("\nTEST 1: INTEGERS\n");
-        System.out.println("Stack with 10 numbers in reverse order:");
-        System.out.println(stk);
+        // for (int i = 0; i < 10; i++){
+        //     stk.push(i);
+        // }
+        // System.out.println("\nTEST 1: INTEGERS\n");
+        // System.out.println("Stack with 10 numbers in reverse order:");
+        // System.out.println(stk);
 
-        System.out.println("Popping the first 5 numbers:");
-        for (int i = 0; i <5; i++){
-            stk.pop();
-        }
-        System.out.println(stk);
+        // System.out.println("Popping the first 5 numbers:");
+        // for (int i = 0; i <5; i++){
+        //     stk.pop();
+        // }
+        // System.out.println(stk);
 
-        System.out.println("Peeking, number should be 4:");
-        System.out.println(stk.peek());
-        System.out.println("Now, peeking at index 3, should be 1:");
-        System.out.println(stk.get(3));
+        // System.out.println("Peeking, number should be 4:");
+        // System.out.println(stk.peek());
+        // System.out.println("Now, peeking at index 3, should be 1:");
+        // System.out.println(stk.get(3));
 
-        System.out.println("\nTEST2: MIXED TYPES\n");
+        // System.out.println("\nTEST2: MIXED TYPES\n");
 
-        stk.clear();
+        // stk.clear();
 
-        ArrayList<String> word  = new ArrayList<String>();
-        word.add("K");
-        word.add("C");
-        word.add("A");
-        word.add("T");
-        word.add("S");
+        // ArrayList<String> word  = new ArrayList<String>();
+        // word.add("K");
+        // word.add("C");
+        // word.add("A");
+        // word.add("T");
+        // word.add("S");
 
-        System.out.println("Our new stack should say stack 2.0:");
-        stk.push(2.0);
+        // System.out.println("Our new stack should say stack 2.0:");
+        // stk.push(2.0);
 
-        for (String str: word){
-            stk.push(str);
-        }
+        // for (String str: word){
+        //     stk.push(str);
+        // }
 
-        System.out.println(stk);
+        // System.out.println(stk);
 
-        System.out.println("Popping two letters, now it says ack 2.0:");
-        stk.pop();
-        stk.pop();
-        System.out.println(stk);
+        // System.out.println("Popping two letters, now it says ack 2.0:");
+        // stk.pop();
+        // stk.pop();
+        // System.out.println(stk);
 
-        System.out.println("Peeking should be: A");
-        System.out.println(stk.peek());
+        // System.out.println("Peeking should be: A");
+        // System.out.println(stk.peek());
 
-        System.out.println("And size should be 4:");
-        System.out.println(stk.size());
+        // System.out.println("And size should be 4:");
+        // System.out.println(stk.size());
 
-        System.out.println("Clearing, now it should be empty:");
-        stk.clear();
-        System.out.println(stk);
+        // System.out.println("Clearing, now it should be empty:");
+        // stk.clear();
+        // System.out.println(stk);
 
-        System.out.println("Now, size should be 0:");
-        System.out.println(stk.size());
+        // System.out.println("Now, size should be 0:");
+        // System.out.println(stk.size());
 
         System.out.println("Infix to postfix: ");
-        System.out.println(stk.inToPost("(AB) * (CD)"));
+        System.out.println(stk.inToPost("( A B ) * ( C D )"));
     }
 
 }   
