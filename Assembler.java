@@ -1,6 +1,9 @@
 //Katie Andre, Aidan Sweeny
 import java.util.ArrayList;
 import java.io.FileWriter; 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Assembler{
     private LLStack stk;
@@ -43,13 +46,15 @@ public class Assembler{
         // do operation to left
         // Return both the temp variable and the string representing the assembly language
         String temp = "TEMP" + this.temp_num;
+        String evaluated = "";
         this.temp_num++;
         if (operator.equals("+")){
              try{    
+                evaluated += "LD " + left + "\n";
+                evaluated += "AD " + right + "\n";
+                evaluated += "ST " + temp + "\n";
                 FileWriter fw = new FileWriter(this.file_name, true);    
-                fw.write("LD " + left + "\n");    
-                fw.write("AD " + right + "\n");
-                fw.write("ST " + temp + "\n");    
+                fw.write(evaluated);     
                 fw.close();    
             }
             catch(Exception e){System.out.println(e);}    
@@ -57,10 +62,11 @@ public class Assembler{
         }
         else if (operator.equals("-")){
             try{    
+                evaluated += "LD " + left + "\n";
+                evaluated += "SB " + right + "\n";
+                evaluated += "ST " + temp + "\n";
                 FileWriter fw = new FileWriter(this.file_name, true);    
-                fw.write("LD " + left + "\n");    
-                fw.write("SB " + right + "\n");
-                fw.write("ST " + temp + "\n");    
+                fw.write(evaluated);     
                 fw.close();    
             }
             catch(Exception e){System.out.println(e);}    
@@ -68,10 +74,11 @@ public class Assembler{
         }
         else if (operator.equals("*")){
             try{    
+                evaluated += "LD " + left + "\n";
+                evaluated += "ML " + right + "\n";
+                evaluated += "ST " + temp + "\n";
                 FileWriter fw = new FileWriter(this.file_name, true);    
-                fw.write("LD " + left + "\n");    
-                fw.write("ML " + right + "\n");
-                fw.write("ST " + temp + "\n");    
+                fw.write(evaluated);     
                 fw.close();    
             }
             catch(Exception e){System.out.println(e);}    
@@ -79,10 +86,11 @@ public class Assembler{
         }
         else if (operator.equals("/")){
             try{    
+                evaluated += "LD " + left + "\n";
+                evaluated += "DV " + right + "\n";
+                evaluated += "ST " + temp + "\n";
                 FileWriter fw = new FileWriter(this.file_name, true);    
-                fw.write("LD " + left + "\n");    
-                fw.write("DV " + right + "\n");
-                fw.write("ST " + temp + "\n");    
+                fw.write(evaluated);     
                 fw.close();    
             }
             catch(Exception e){System.out.println(e);}    
@@ -95,17 +103,21 @@ public class Assembler{
         return temp; 
     }
 
-    public static void main(String args[]){
+    public static void main(String args[])throws IOException{
         //  Assembler as = new Assembler();
         //  String pf = "( ( AX + ( BY * C ) ) / ( D4 - E ) ) ;";
         //  String sol = as.assemble(pf);
         //  System.out.println(sol);
-        if (args.length > 1){
-            System.out.println(args);
+        if (args.length > 0){
+            Assembler as = new Assembler();
+            Path fileName = Path.of((String)args[0]);
+            String pf = Files.readString(fileName);
+            String sol = as.assemble(pf);
+            System.out.println(sol);
         }
         else{
             System.out.println("Must provide the filename with the given infix expression");
         }
-        // Assembler as = new Assembler();
+        
     }
 }
