@@ -20,25 +20,43 @@ public class Assembler{
 
     }
     public String assemble(String infix){
-        String pf = this.postfix.inToPost(infix);
-        String[] characters = pf.split(" ");
-        String operators = "+-*/";
-        String right;
-        String left;
-        String oper;
-        for (int i=0; i < characters.length; i++){
-            if(operators.contains(characters[i])){
-                right = (String)stk.pop();
-                left = (String)stk.pop();
-                oper = this.evaluate(left, right, characters[i]);
-                stk.push(oper);
+        String[] split_infix = infix.split("(?<=;)");
+        
+        String solution = "";
+        for (int j=0; j < split_infix.length; j++){
+            try{    
+                this.fw.write(split_infix[j] + "\n----------------------------------\n");
             }
-            else{
-                stk.push(characters[i]);
+            catch(Exception e){System.out.println(e);}   
+            this.temp_num = 1;
+            String pf = this.postfix.inToPost(split_infix[j]);
+            try{    
+                this.fw.write(pf + "\n----------------------------------\n");
             }
+            catch(Exception e){System.out.println(e);}    
+            String[] characters = pf.split(" ");
+            String operators = "+-*/";
+            String right;
+            String left;
+            String oper;
+            for (int i=0; i < characters.length; i++){
+                if(operators.contains(characters[i])){
+                    right = (String)stk.pop();
+                    left = (String)stk.pop();
+                    oper = this.evaluate(left, right, characters[i]);
+                    stk.push(oper);
+                }
+                else{
+                    stk.push(characters[i]);
+                }
+            }
+            solution += (String)stk.pop() + "\n----------------------------------\n";
+            try{    
+                this.fw.write("\n----------------------------------\n");
+            }
+            catch(Exception e){System.out.println(e);}    
         }
-        return (String)stk.pop();
-
+        return solution;
     }
 
     private String evaluate(String left, String right, String operator){
@@ -53,7 +71,6 @@ public class Assembler{
                 this.fw.write(evaluated);     
             }
             catch(Exception e){System.out.println(e);}    
-            System.out.println("Success...");  
         }
         else if (operator.equals("-")){
             try{    
@@ -63,7 +80,6 @@ public class Assembler{
                 this.fw.write(evaluated);     
             }
             catch(Exception e){System.out.println(e);}    
-            System.out.println("Success...");  
         }
         else if (operator.equals("*")){
             try{    
@@ -73,7 +89,6 @@ public class Assembler{
                 this.fw.write(evaluated);     
             }
             catch(Exception e){System.out.println(e);}    
-            System.out.println("Success...");  
         }
         else if (operator.equals("/")){
             try{    
@@ -83,7 +98,6 @@ public class Assembler{
                 this.fw.write(evaluated);     
             }
             catch(Exception e){System.out.println(e);}    
-            System.out.println("Success...");  
         }
         else{
             System.out.print("Not a Valid Operation");
@@ -103,8 +117,8 @@ public class Assembler{
                 Assembler as = new Assembler(fw);
                 Path fileName = Path.of((String)args[0]);
                 String pf = Files.readString(fileName);
-                fw.write(pf + "\n");
-                String sol = as.assemble(pf);
+                as.assemble(pf);
+                System.out.println("Output is in file: " + fileName);
                 fw.close();
             }
             else{

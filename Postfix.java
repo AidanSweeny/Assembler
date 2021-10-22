@@ -24,13 +24,14 @@ public class Postfix{
             }
             i++;
         } 
+        
         return (String)stk.pop();
     }
 
     public static void main(String args[]){
         Postfix pf = new Postfix();
         String postfix;
-        postfix = pf.inToPost("( ( A + ( B * C ) ) / ( D - E ) )");
+        postfix = pf.inToPost("( ( A + ( B * C ) ) / ( D - E ) ); ( A + B ) ;");
         System.out.println("The postfix is: ");
         System.out.println(postfix);
     }
