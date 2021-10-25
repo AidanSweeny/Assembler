@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.io.FileDescriptor;
 
 public class Assembler{
     private LLStack stk;
@@ -13,7 +14,7 @@ public class Assembler{
     public FileWriter fw;
 
     public Assembler(FileWriter fw){
-        this.postfix = new Postfix();
+        this.postfix = new Postfix(fw);
         this.stk = new LLStack();
         this.temp_num = 1;
         this.fw = fw;
@@ -23,7 +24,7 @@ public class Assembler{
         String[] split_infix = infix.split("(?<=;)");
         
         String solution = "";
-        for (int j=0; j < split_infix.length; j++){
+        for (int j=0; j < split_infix.length-1; j++){
             try{    
                 this.fw.write(split_infix[j] + "\n----------------------------------\n");
             }
@@ -112,14 +113,24 @@ public class Assembler{
         //  String sol = as.assemble(pf);
         //  System.out.println(sol);
         try{
-            FileWriter fw = new FileWriter("output.txt");
             if (args.length > 0){
-                Assembler as = new Assembler(fw);
-                Path fileName = Path.of((String)args[0]);
-                String pf = Files.readString(fileName);
-                as.assemble(pf);
-                System.out.println("Output is in file: " + fileName);
-                fw.close();
+                if (args.length > 1){
+                    FileWriter fw = new FileWriter(args[1]);
+                    Assembler as = new Assembler(fw);
+                    Path fileName = Path.of((String)args[0]);
+                    String pf = Files.readString(fileName);
+                    as.assemble(pf);
+                    System.out.println("Output is in file: " + args[1]);
+                    fw.close();
+                }
+                else{
+                    FileWriter fw = new FileWriter(FileDescriptor.out); // Outputs to terminal
+                    Assembler as = new Assembler(fw);
+                    Path fileName = Path.of((String)args[0]);
+                    String pf = Files.readString(fileName);
+                    as.assemble(pf);
+                    fw.close();
+                }
             }
             else{
                 System.out.println("Must provide the filename with the given infix expression");
